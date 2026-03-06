@@ -15,7 +15,7 @@ This repository contains a basic batch pattern for running RACF `LISTDSD` for ma
 2. `EXEC 'YOUR.REXX.EXEC.LIB(LSTRACF)'` is called from `SYSTSIN`.
 3. `LSTRACF` reads `DD INLIST`.
 4. For each entry, it runs `LISTDSD`.
-5. Output is trapped with `OUTTRAP` and written to `DD OUTDD`.
+5. Output is trapped with `OUTTRAP` and written with `SAY` to `DD SYSTSPRT`.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ Update these DSNs in `LSTDSD.jcl`:
 
 - `SYSTSIN` command: `EXEC 'YOUR.REXX.EXEC.LIB(LSTRACF)'`
 - `INLIST DD DSN=YOUR.INPUT.DSN.LIST`
-- `OUTDD DD DSN=YOUR.OUTPUT.LISTDSD.REPORT`
+- `SYSTSPRT DD DSN=YOUR.OUTPUT.LISTDSD.REPORT`
 
 Copy the REXX source into your exec library as member `LSTRACF`, and reference that fully-qualified member DSN in `SYSTSIN`.
 
@@ -45,8 +45,8 @@ SYS1.PARMLIB
 
 Notes:
 - Blank lines are ignored.
-- Lines beginning with `*` are treated as comments.
-- Optional surrounding single quotes are removed.
+- Comment lines are not currently handled specially.
+- Optional surrounding single quotes are not currently removed.
 
 ## Run
 
@@ -54,5 +54,4 @@ Submit `LSTDSD.jcl` after updating DSNs.
 
 ## Output
 
-- Primary report: `OUTDD` dataset (`YOUR.OUTPUT.LISTDSD.REPORT`).
-- Job/runtime messages: `SYSTSPRT` (currently `SYSOUT=*` in the sample JCL).
+- Primary report and runtime messages: `SYSTSPRT` dataset (`YOUR.OUTPUT.LISTDSD.REPORT`).

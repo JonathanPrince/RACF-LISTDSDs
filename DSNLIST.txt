@@ -1,4 +1,2 @@
-* One dataset/profile pattern per line
 HLQ.APP.FILE1
-HLQ.APP.**
 SYS1.PARMLIB

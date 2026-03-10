@@ -1,16 +1,20 @@
 param(
-    [string]$Path = ".\listdsd.txt",
+    [Parameter(Mandatory=$true)]
+    [string]$InPath,
 
+    [string]$OutPath,
+
+    [Parameter(Mandatory=$true)]
     [string[]]$IDs
 )
 
-# Build regex pattern from supplied IDs
-$idPattern = ($IDs | ForEach-Object {[regex]::Escape($_)}) -join "|"
+# Build regex for requested IDs
+$idPattern = ($IDs | ForEach-Object { [regex]::Escape($_) }) -join "|"
 $searchRegex = "(?m)^\s*($idPattern)\s+ALTER\b"
 
-$content = Get-Content -Path $Path -Raw
+$content = Get-Content -Path $InPath -Raw
 
-# Split into LISTDSD records
+# Split LISTDSD records
 $records = [regex]::Split($content, '(?m)^(?=Processing:\s+)') |
     Where-Object { $_ -match '(?m)^Processing:\s+' }
 
@@ -28,15 +32,15 @@ $results = foreach ($record in $records) {
     $aclText = $aclMatch.Value.TrimEnd()
 
     if ($aclText -match $searchRegex) {
-        [pscustomobject]@{
-            DatasetInfo = $infoMatch.Value
-            AccessList  = $aclText
-        }
+        $infoMatch.Value
+        $aclText
+        ""
     }
 }
 
-$results | ForEach-Object {
-    $_.DatasetInfo
-    $_.AccessList
-    ""
+# Output handling
+if ($OutPath) {
+    $output | Set-Content -Path $OutPath
+} else {
+    $output
 }

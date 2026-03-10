@@ -60,9 +60,9 @@ Submit `LSTDSD.jcl` after updating DSNs.
 
 Example PowerShell to get a list of all IDs that have ALTER/UPDATE accesss:
 ```
-sls -Path .\records.txt -Pattern "^(.{11}(ALTER|UPDATE)" | % { $_.Matches.Groups[1].value } | sort -u
+sls -Path .\records.txt -Pattern "^(\S+)\s+(ALTER|UPDATE)" | % { $_.Matches.Groups[1].value } | sort -u
 ```
-Alternatively, use listdsd-parser.ps1:
+To get the records for any IDs that are questionable use listdsd-parser.ps1:
 ```
 .\listdsd-parser.ps1 -InPath records.txt -OutPath output.txt -IDs USER01,GROUP3,USER04
 ```

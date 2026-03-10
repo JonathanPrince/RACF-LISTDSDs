@@ -10,7 +10,7 @@ param(
 
 # Build regex for requested IDs
 $idPattern = ($IDs | ForEach-Object { [regex]::Escape($_) }) -join "|"
-$searchRegex = "(?m)^\s*($idPattern)\s+ALTER\b"
+$searchRegex = "(?m)^($idPattern)\s+(ALTER|UPDATE)\b"
 
 $content = Get-Content -Path $InPath -Raw
 
@@ -18,7 +18,9 @@ $content = Get-Content -Path $InPath -Raw
 $records = [regex]::Split($content, '(?m)^(?=Processing:\s+)') |
     Where-Object { $_ -match '(?m)^Processing:\s+' }
 
-$results = foreach ($record in $records) {
+$results = @()
+
+foreach ($record in $records) {
 
     $infoMatch = [regex]::Match($record, '(?m)^INFORMATION FOR DATASET .*$')
     if (-not $infoMatch.Success) { continue }
@@ -29,18 +31,17 @@ $results = foreach ($record in $records) {
     )
     if (-not $aclMatch.Success) { continue }
 
-    $aclText = $aclMatch.Value.TrimEnd()
-
-    if ($aclText -match $searchRegex) {
-        $infoMatch.Value
-        $aclText
-        ""
+    if ($aclMatch -match $searchRegex) {
+        Write-Host $infoMatch
+        Write-Host $aclMatch
+        Write-HOst ""
+        $results += $infoMatch
+        $results += $aclMatch
+        $results += ""
     }
 }
 
 # Output handling
 if ($OutPath) {
     $output | Set-Content -Path $OutPath
-} else {
-    $output
 }

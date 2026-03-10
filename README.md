@@ -55,3 +55,14 @@ Submit `LSTDSD.jcl` after updating DSNs.
 ## Output
 
 - Primary report and runtime messages: `SYSTSPRT` dataset (`YOUR.OUTPUT.LISTDSD.REPORT`).
+
+## Analysis
+
+Example PowerShell to get a list of all IDs that have ALTER/UPDATE accesss:
+```
+sls -Path .\records.txt -Pattern "^(.{11}(ALTER|UPDATE)" | % { $_.Matches.Groups[1].value } | sort -u
+```
+Alternatively, use listdsd-parser.ps1:
+```
+.\listdsd-parser.ps1 -InPath records.txt -OutPath output.txt -IDs USER01,GROUP3,USER04
+```
